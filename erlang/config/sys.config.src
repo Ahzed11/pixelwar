@@ -1,0 +1,13 @@
+[
+  {pixelwar, [
+    
+  ]},
+  {kernel, [
+    {logger_level, info},
+    {logger, [
+      {handler, default, logger_std_h,
+        #{formatter => {logger_formatter,
+                        #{template => [time," ",pid," ",msg,"\n"]}}}}
+    ]}
+  ]}
+].

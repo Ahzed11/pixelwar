@@ -1,0 +1,93 @@
+name: Publish tarball
+# https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
+# https://grrr.tech/posts/2021/github-actions-assume-role/
+
+on:
+  push:
+    tags: [ "v[0-9]+.[0-9]+.[0-9]+" ]
+
+env:
+  RELNAME: dandelion
+
+jobs:
+
+  build:
+    name: Prepare build artifacts
+    runs-on: ubuntu-latest
+
+    container:
+      image: erlang:25.0.2
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Fetch manifest version
+        run: |
+          NEW_VSN=${GITHUB_REF##*/v}
+          echo "VSN=$NEW_VSN" >> $GITHUB_ENV
+          API_RESPONSE=$(curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{secrets.GH_TOKEN}}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/latest)
+          echo "API_RESPONSE: $API_RESPONSE"
+          
+          OLD_VSN=$(echo $API_RESPONSE | grep -o '"tag_name": ".*"' | cut -d'"' -f4)
+          if echo "$API_RESPONSE" | grep -q '"message": "Not Found"'; then
+            OLD_VSN=""
+          fi
+
+          echo "OLD_VSN=$OLD_VSN" >> $GITHUB_ENV
+          IS_UPGRADE=$(echo "$NEW_VSN $OLD_VSN" | awk -vFS='[. ]' '($1==$4 && $2>$5) || ($1==$4 && $2>=$5 && $3>$6) {print 1; exit} {print 0}')
+          if [ "$IS_UPGRADE" -eq 1 ]; then
+              echo "RELUP=1" >> $GITHUB_ENV
+          else
+              echo "RELUP=0" >> $GITHUB_ENV
+          fi
+      - run: |
+          echo "${{ env.OLD_VSN }} -> ${{ env.VSN }} : ${{ env.RELUP }}"
+      - name: Build a tarball
+        working-directory: erlang
+        run: |
+          if [ ${{ env.RELUP }} -eq 1 ]; then
+            ORIG=$(/usr/bin/git log -1 --format='%H')
+            git checkout v${{ env.OLD_VSN }}
+            rebar3 do clean -a, release
+            git checkout $ORIG
+            rebar3 do clean -a, release
+            rebar3 appup generate
+            rebar3 relup -n ${{ env.RELNAME }} -v ${{ env.VSN }} -u ${{ env.OLD_VSN }}
+          else
+            rebar3 release
+          fi
+          rebar3 tar
+          BUILD=$(ls _build/default/rel/${{ env.RELNAME }}/${{ env.RELNAME }}-*.tar.gz)
+          mkdir ../_artifacts
+          cp $BUILD ../_artifacts/${{ env.VSN }}.tar.gz
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: _artifacts
+          retention-days: 1
+
+  upload:
+    name: Publish build artifacts
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: artifacts
+          path: _artifacts
+
+      # Fix permissions
+      - name:  Upload release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: |
+            _artifacts/*.tar.gz

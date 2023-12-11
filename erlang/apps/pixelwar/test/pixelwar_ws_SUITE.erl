@@ -4,7 +4,7 @@
 -compile(export_all).
 
 all() ->
-    [websocket_receive_state_test_case].
+    [receive_state_test_case, send_pixel_test_case, send_pixel_get_state_test_case].
 
 init_per_testcase(_Case, Config) ->
     application:load(pixelwar),
@@ -45,14 +45,39 @@ listener(Pid, ExpectedFrame) ->
             ?assertEqual(ExpectedFrame, ReceivedFrame);
         Msg ->
             ct:print("Unexpected message ~p", [Msg])
+    after
+        200 -> ?assertEqual(timeout, ExpectedFrame)
     end.
 
-websocket_receive_state_test_case() ->
+receive_state_test_case() ->
     [{doc, "Tries to receive the current state of the matrix"},
      {timetrap, timer:seconds(5)}].
-websocket_receive_state_test_case(_Config) ->
+receive_state_test_case(_Config) ->
     {Pid, Ref, StreamRef} = wsConnect(),
     gun:ws_send(Pid, StreamRef, {binary, <<1:8>>}),
     listener(Pid, {binary,<<>>}),
+    wsClose(Pid, Ref),
+    ok.
+
+send_pixel_test_case() ->
+    [{doc, "Tries to send a pixel and then verifies that we receive nothing"},
+     {timetrap, timer:seconds(5)}].
+
+send_pixel_test_case(_Config) ->
+    {Pid, Ref, StreamRef} = wsConnect(),
+    gun:ws_send(Pid, StreamRef, {binary, <<42:16, 24:16, 1024:16>>}),
+    listener(Pid, timeout),
+    wsClose(Pid, Ref),
+    ok.
+
+send_pixel_get_state_test_case() ->
+    [{doc, "Tries to send a pixel and then verifies the current state"},
+     {timetrap, timer:seconds(5)}].
+
+send_pixel_get_state_test_case(_Config) ->
+    {Pid, Ref, StreamRef} = wsConnect(),
+    gun:ws_send(Pid, StreamRef, {binary, <<42:16, 24:16, 1024:16>>}),
+    gun:ws_send(Pid, StreamRef, {binary, <<1:8>>}),
+    listener(Pid, {binary,<<42:16, 24:16, 1024:16>>}),
     wsClose(Pid, Ref),
     ok.

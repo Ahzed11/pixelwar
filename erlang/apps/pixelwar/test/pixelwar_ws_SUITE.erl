@@ -16,10 +16,6 @@ end_per_testcase(_Case, Config) ->
     [application:stop(App) || App <- lists:reverse(?config(apps, Config))],
     Config.
 
-conn() ->
-    [{doc, "A connection is established and responds to packets"},
-     {timetrap, timer:seconds(5)}].
-
 wsConnect() ->
     {ok, Pid} = gun:open("localhost", 8080),
     {ok, http} = gun:await_up(Pid),

@@ -26,7 +26,7 @@ main([Branch]) ->
                       "an older one.~n"
                       "Bump up the release version to generate relups.~n",
                       [N]),
-            init:stop(1)
+            init:stop(0)
     end,
     Releases = [Content || Path <- RelFiles,
                            {ok, [Content]} <- [file:consult(Path)]],

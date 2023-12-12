@@ -50,9 +50,12 @@ main([Branch]) ->
     ),
     Incorrect = lists:filter(
         fun(App) ->
-                {_, OldVsn} = lists:keyfind(App, 1, Old),
-                {_, NewVsn} = lists:keyfind(App, 1, New),
-                OldVsn == NewVsn
+            OldVsn = case lists:keyfind(App, 1, Old) of
+                {_, Vsn} -> Vsn;
+                false -> ""
+            end,                
+            {_, NewVsn} = lists:keyfind(App, 1, New),
+            OldVsn == NewVsn
         end,
         AppsChanged
     ),

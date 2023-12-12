@@ -6,11 +6,7 @@ main([]) ->
     main([os:cmd("git rev-parse --abbrev-ref HEAD")]);
 main([Branch]) ->
     SrcPrefix = "apps/",
-    LastTag = string:trim(os:cmd("git tag -l --sort=committerdate 'v*.*.*' | tail -n 1")),
-    if
-        LastTag =:= [] -> init:stop(1);
-        true -> "v"++_LastVsn = LastTag
-    end,
+    "v"++_LastVsn = LastTag = string:trim(os:cmd("git tag -l --sort=committerdate 'v*.*.*' | tail -n 1")),
     io:format("switching to ~ts and back to ~ts~n", [LastTag, Branch]),
     io:format("~p: ~ts~n", [?LINE, os:cmd("git checkout "++LastTag)]),
     io:format("~p: ~ts~n", [?LINE, os:cmd("rebar3 do clean -a, release, tar")]),
@@ -26,7 +22,7 @@ main([Branch]) ->
                       "an older one.~n"
                       "Bump up the release version to generate relups.~n",
                       [N]),
-            init:stop(0)
+            init:stop(1)
     end,
     Releases = [Content || Path <- RelFiles,
                            {ok, [Content]} <- [file:consult(Path)]],

@@ -5,7 +5,7 @@
 main([]) ->
     main([os:cmd("git rev-parse --abbrev-ref HEAD")]);
 main([Branch]) ->
-    SrcPrefix = "erlang/apps/",
+    SrcPrefix = "apps/",
     "v"++_LastVsn = LastTag = string:trim(os:cmd("git tag -l --sort=committerdate 'v*.*.*' | tail -n 1")),
     io:format("switching to ~ts and back to ~ts~n", [LastTag, Branch]),
     io:format("~p: ~ts~n", [?LINE, os:cmd("git checkout "++LastTag)]),
@@ -50,11 +50,7 @@ main([Branch]) ->
     ),
     Incorrect = lists:filter(
         fun(App) ->
-                OldVsn = case lists:keyfind(App, 1, Old) of
-                    {_, Vsn} -> Vsn;
-                    false -> ""
-                end,
-                
+                {_, OldVsn} = lists:keyfind(App, 1, Old),
                 {_, NewVsn} = lists:keyfind(App, 1, New),
                 OldVsn == NewVsn
         end,
@@ -70,10 +66,10 @@ main([Branch]) ->
     end,
     %% Build relup phase
     io:format("~ts~n", [os:cmd("rebar3 appup generate")]),
-    io:format("~ts~n", [os:cmd("rebar3 relup -n dandelion -v "++NewStr++" -u "++OldStr)]),
+    io:format("~ts~n", [os:cmd("rebar3 relup -n pixelwar -v "++NewStr++" -u "++OldStr)]),
     io:format("~ts~n", [os:cmd("rebar3 tar")]),
-    io:format("OLD: _build/default/rel/dandelion/dandelion-~ts.tar.gz~n"
-              "NEW: _build/default/rel/dandelion/dandelion-~ts.tar.gz~n",
+    io:format("OLD: _build/default/rel/pixelwar/pixelwar-~ts.tar.gz~n"
+              "NEW: _build/default/rel/pixelwar/pixelwar-~ts.tar.gz~n",
               [OldStr, NewStr]),
     init:stop(0).
 

@@ -6,7 +6,11 @@ main([]) ->
     main([os:cmd("git rev-parse --abbrev-ref HEAD")]);
 main([Branch]) ->
     SrcPrefix = "apps/",
-    "v"++_LastVsn = LastTag = string:trim(os:cmd("git tag -l --sort=committerdate 'v*.*.*' | tail -n 1")),
+    LastTag = string:trim(os:cmd("git tag -l --sort=committerdate 'v*.*.*' | tail -n 1")),
+    if
+        LastTag =:= [] -> init:stop(1);
+        true -> "v"++_LastVsn = LastTag
+    end,
     io:format("switching to ~ts and back to ~ts~n", [LastTag, Branch]),
     io:format("~p: ~ts~n", [?LINE, os:cmd("git checkout "++LastTag)]),
     io:format("~p: ~ts~n", [?LINE, os:cmd("rebar3 do clean -a, release, tar")]),

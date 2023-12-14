@@ -60,7 +60,7 @@ jobs:
           rebar3 tar
           BUILD=$(ls _build/default/rel/${{ env.RELNAME }}/${{ env.RELNAME }}-*.tar.gz)
           mkdir ../_artifacts
-          cp $BUILD ../_artifacts/${{ env.VSN }}.tar.gz
+          cp $BUILD ../_artifacts/${{ env.RELNAME }}-${{ env.VSN }}.tar.gz
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -85,7 +85,6 @@ jobs:
           name: artifacts
           path: _artifacts
 
-      # Fix permissions
       - name:  Upload release
         uses: ncipollo/release-action@v1
         with:

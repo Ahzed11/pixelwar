@@ -34,16 +34,6 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Check Tags Existence
-      run: |
-        if [ -z "$(git tag -l)" ]; then
-          echo "No tags found."
-          echo "TAGS_EXIST=0" >> $GITHUB_ENV
-        else
-          echo "Tags found: $(git tag -l)"
-          echo "TAGS_EXIST=1" >> $GITHUB_ENV
-        fi
-
     - name: Run validation checks and build releases
       working-directory: erlang
       if: env.TAGS_EXIST == 1

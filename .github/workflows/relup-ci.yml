@@ -9,6 +9,20 @@ permissions:
 
 jobs:
 
+  has-tags:
+    runs-on: ubuntu-latest
+    name: Check if we have tags
+    steps:
+      - name: Check if we have tags
+        id: check
+        uses: ahzed11/has-tags-action@v1.1
+      - name: Tags found
+        if: ${{steps.check.outputs.hasTags == 'true'}}
+        run: echo "TAGS_EXIST=1" >> $GITHUB_ENV
+      - name: Tags not found
+        if: ${{steps.check.outputs.hasTags == 'false'}}
+        run: echo "TAGS_EXIST=0" >> $GITHUB_ENV
+
   versions:
     runs-on: ubuntu-latest
 

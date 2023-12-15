@@ -8,21 +8,6 @@ permissions:
   contents: read
 
 jobs:
-
-  has-tags:
-    runs-on: ubuntu-latest
-    name: Check if we have tags
-    steps:
-      - name: Check if we have tags
-        id: check
-        uses: ahzed11/has-tags-action@v1.1
-      - name: Tags found
-        if: ${{steps.check.outputs.hasTags == 'true'}}
-        run: echo "TAGS_EXIST=1" >> $GITHUB_ENV
-      - name: Tags not found
-        if: ${{steps.check.outputs.hasTags == 'false'}}
-        run: echo "TAGS_EXIST=0" >> $GITHUB_ENV
-
   versions:
     runs-on: ubuntu-latest
 
@@ -30,13 +15,17 @@ jobs:
       image: erlang:26.1.2
 
     steps:
+    - name: Check if we have tags
+      id: check
+      uses: ahzed11/has-tags-action@v1.1
+
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
     - name: Run validation checks and build releases
       working-directory: erlang
-      if: env.TAGS_EXIST == 1
+      if: ${{steps.check.outputs.hasTags == 'true'}}
       run: |
         ../scripts/check_versions $(/usr/bin/git log -1 --format='%H') > vsn.log
         cat vsn.log
@@ -52,7 +41,7 @@ jobs:
       
     - name: Run relup application
       working-directory: erlang
-      if: env.TAGS_EXIST == 1
+      if: ${{steps.check.outputs.hasTags == 'true'}}
       run: |
         mkdir relupci
         tar -xvf "${{ env.OLD_TAR }}" -C relupci

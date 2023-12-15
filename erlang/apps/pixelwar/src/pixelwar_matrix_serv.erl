@@ -3,11 +3,13 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/0, set_element/2, get_state/1]).
+-export([start_link/1, set_element/2, get_state/1]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 
-start_link() ->
-    gen_server:start_link({local, matrix}, ?MODULE, [], []).
+-record(pixelwar_matrix, {pixels, width, height}).
+
+start_link(Args) ->
+    gen_server:start_link({local, matrix}, ?MODULE, Args, []).
 
 set_element(Instance, Pixel) ->
     gen_server:cast(Instance, {set_element, Pixel}).
@@ -18,8 +20,8 @@ get_state(Instance) ->
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-init(_Args) ->
-    {ok, #{}}.
+init({Width, Height}) ->
+    {ok, #pixelwar_matrix{pixels=#{}, width=Width, height=Height}}.
 
 handle_call(stop, _From, State) ->
     {stop, normal, stopped, State};
@@ -29,7 +31,7 @@ handle_call(get_state, _From, State) ->
         {X, Y} = K,
         <<Acc/binary, X:16/little, Y:16/little, V:16/little>>
     end,
-    AsBinary = maps:fold(ToBinary, <<>>, State),
+    AsBinary = maps:fold(ToBinary, <<>>, State#pixelwar_matrix.pixels),
     {reply, AsBinary, State};
 
 handle_call(_Request, _From, State) ->
@@ -37,8 +39,14 @@ handle_call(_Request, _From, State) ->
 
 handle_cast({set_element, {X, Y, Color}}, State) ->
     Key = {X, Y},
-    NewState = maps:put(Key, Color, State),
-    {noreply, NewState};
+    if
+        X >= State#pixelwar_matrix.width orelse X < 0 -> {noreply, State};
+        Y >= State#pixelwar_matrix.height orelse Y < 0 -> {noreply, State};
+        true ->
+            NewPixels = maps:put(Key, Color, State#pixelwar_matrix.pixels),
+            NewState = State#pixelwar_matrix{pixels=NewPixels, width=State#pixelwar_matrix.width, height=State#pixelwar_matrix.height},
+            {noreply, NewState}
+    end;
 
 handle_cast(_Msg, State) ->
     {noreply, State}.

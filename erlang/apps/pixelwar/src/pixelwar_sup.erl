@@ -15,10 +15,13 @@ init(_Args) ->
         intensity => 10,
         period => 60},
 
-    ChildSpecifications = [
+        {ok, Width} = application:get_env(pixelwar, matrix_width),
+        {ok, Height} = application:get_env(pixelwar, matrix_height),
+
+        ChildSpecifications = [
         #{
             id => matrix,
-            start => {pixelwar_matrix_serv, start_link, []},
+            start => {pixelwar_matrix_serv, start_link, [{Width, Height}]},
             restart => permanent, % permanent | transient | temporary
             shutdown => 2000,
             type => worker % worker | supervisor

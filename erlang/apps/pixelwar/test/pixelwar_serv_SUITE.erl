@@ -4,12 +4,17 @@
 -compile(export_all).
 
 all() ->
-    [get_state_test_case].
+    [get_state_test_case, place_out_of_bounds_test_case].
 
 init_per_testcase(_Case, Config) ->
     application:load(pixelwar),
+    Width = 128,
+    Height = 128,
+    application:set_env(pixelwar, matrix_width, Width),
+    application:set_env(pixelwar, matrix_height, Height),
+
     {ok, Apps} = application:ensure_all_started([pixelwar]),
-    [{apps, Apps} | Config].
+    [{apps, Apps}, {width, Width}, {height, Height} | Config].
 
 end_per_testcase(_Case, Config) ->
     [application:stop(App) || App <- lists:reverse(?config(apps, Config))],
@@ -26,3 +31,17 @@ get_state_test_case(_Config) ->
 
     MatrixAsBin = pixelwar_matrix_serv:get_state(matrix),
     ?assertEqual(MatrixAsBin, <<11:16/little, 12:16/little, 13:16/little, 42:16/little, 42:16/little, 42:16/little>>).
+
+place_out_of_bounds_test_case(Config) ->
+    Width = ?config(width, Config),
+    Height = ?config(height, Config),
+
+    InboundWidth = Width - 2,
+    InboundHeight = Height - 2,
+
+    pixelwar_matrix_serv:set_element(matrix, {InboundWidth, InboundHeight, 13}), % In bounds
+    pixelwar_matrix_serv:set_element(matrix, {Width + 2, Height + 2, 13}), % Out of bounds
+
+    MatrixAsBin = pixelwar_matrix_serv:get_state(matrix),
+
+    ?assertEqual(MatrixAsBin, <<InboundWidth:16/little, InboundHeight:16/little, 13:16/little>>).

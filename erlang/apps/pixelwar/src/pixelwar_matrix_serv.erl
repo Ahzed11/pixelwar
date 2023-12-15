@@ -57,5 +57,15 @@ handle_info(_Info, State) ->
 terminate(_Reason, _State) ->
     ok.
 
+code_change("0.1.0", State, _Extra) ->
+    Width = 128,
+    Height = 128,
+    IsOutOfBound = fun({X, Y}, _V) -> X < Width andalso X >= 0 andalso Y < Height andalso Y >= 0 end,
+    FilteredState = maps:filter(IsOutOfBound, State),
+    {ok, #pixelwar_matrix{pixels=FilteredState, width=Width, height=Height}};
+
+code_change({down, "0.1.0"}, State, _Extra) ->
+    {ok, State#pixelwar_matrix.pixels};
+
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.

@@ -57,7 +57,7 @@ handle_info(_Info, State) ->
 terminate(_Reason, _State) ->
     ok.
 
-code_change("0.2.0", State, _Extra) ->
+code_change("0.1.0", State, _Extra) ->
     Width = 128,
     Height = 128,
     IsInBound = fun({X, Y}, _V) -> X < Width andalso X >= 0 andalso Y < Height andalso Y >= 0 end,

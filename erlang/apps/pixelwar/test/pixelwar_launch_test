@@ -1,0 +1,12 @@
+#!/usr/bin/env escript
+-module(pixelwar_launch_test).
+-mode(compile).
+
+main([PrevVersion, CurrentVersion]) ->
+    FromToStr = io_lib:format("apps/pixelwar/test/~s_to_~s",[PrevVersion, CurrentVersion]),
+    % Local: "../../../" ++
+    TestFileName = "../" ++ string:replace(FromToStr, ".", "_", all) ++ ".erl",
+    TestFilePath = filename:absname(TestFileName),
+    filelib:ensure_dir("./results/"),
+    {_, ReturnCode, _} = ct:run_test([{suite, TestFilePath}, {logdir, "./results"}]),
+    init:stop(ReturnCode).

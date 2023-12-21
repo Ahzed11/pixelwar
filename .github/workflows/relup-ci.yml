@@ -52,5 +52,14 @@ jobs:
         OLD_TAG=$(echo "${{ env.OLD_TAR }}"  | sed -nr 's/^.*([0-9]+\.[0-9]+\.[0-9]+)\.tar\.gz$/\1/p')
         NEW_TAG=$(echo "${{ env.NEW_TAR }}"  | sed -nr 's/^.*([0-9]+\.[0-9]+\.[0-9]+)\.tar\.gz$/\1/p')
         
-        echo "Launch test"
-        relupci/bin/pixelwar escript ../apps/pixelwar/test/pixelwar_launch_test ${OLD_TAG} ${NEW_TAG}
+        echo "Launch before update test"
+        ./apps/pixelwar/test/before_update.sh
+
+        relupci/bin/pixelwar unpack ${NEW_TAG}
+        relupci/bin/pixelwar install ${NEW_TAG}
+        relupci/bin/pixelwar upgrade ${NEW_TAG}
+        relupci/bin/pixelwar versions
+
+        sleep 2
+        echo "Launch after update test"
+        ./apps/pixelwar/test/after_update.sh

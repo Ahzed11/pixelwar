@@ -2,7 +2,7 @@
 -behaviour(gen_server).
 
 -record(state, {
-    pixels = #{} :: #{{non_neg_integer(), non_neg_integer()} => non_neg_integer()},
+    pixels = #{} :: #{{non_neg_integer(), non_neg_integer()} => non_neg_integer()}
 }).
 
 -state_record(state).
@@ -24,7 +24,7 @@ get_state(Instance) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 init(_Args) ->
-    {ok, #state{pixels=#{}}.
+    {ok, #state{pixels=#{}}}.
 
 handle_call(stop, _From, State) ->
     {stop, normal, stopped, State};

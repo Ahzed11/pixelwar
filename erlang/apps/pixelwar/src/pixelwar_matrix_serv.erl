@@ -1,6 +1,11 @@
 -module(pixelwar_matrix_serv).
-
 -behaviour(gen_server).
+
+-record(state, {
+    pixels = #{} :: #{{non_neg_integer(), non_neg_integer()} => non_neg_integer()}
+}).
+
+-state_record(state).
 
 %% API
 -export([start_link/0, set_element/2, get_state/1]).
@@ -19,7 +24,7 @@ get_state(Instance) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 init(_Args) ->
-    {ok, #{}}.
+    {ok, #state{pixels=#{}}}.
 
 handle_call(stop, _From, State) ->
     {stop, normal, stopped, State};
@@ -29,7 +34,7 @@ handle_call(get_state, _From, State) ->
         {X, Y} = K,
         <<Acc/binary, X:16/little, Y:16/little, V:16/little>>
     end,
-    AsBinary = maps:fold(ToBinary, <<>>, State),
+    AsBinary = maps:fold(ToBinary, <<>>, State#state.pixels),
     {reply, AsBinary, State};
 
 handle_call(_Request, _From, State) ->
@@ -37,7 +42,8 @@ handle_call(_Request, _From, State) ->
 
 handle_cast({set_element, {X, Y, Color}}, State) ->
     Key = {X, Y},
-    NewState = maps:put(Key, Color, State),
+    NewPixels = maps:put(Key, Color, State#state.pixels),
+    NewState = #state{pixels=NewPixels},
     {noreply, NewState};
 
 handle_cast(_Msg, State) ->

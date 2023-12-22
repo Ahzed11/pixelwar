@@ -1,13 +1,11 @@
 -module(pixelwar_matrix_serv).
--vsn("0.1.0").
--compile({parse_transform, exprecs}).
 -behaviour(gen_server).
 
--record('state', {
+-record(state, {
     pixels = #{} :: #{{non_neg_integer(), non_neg_integer()} => non_neg_integer()},
 }).
 
--export_records([state]).
+-state_record(state).
 
 %% API
 -export([start_link/0, set_element/2, get_state/1]).

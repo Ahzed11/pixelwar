@@ -7,8 +7,6 @@
     height = 128 :: non_neg_integer()
 }).
 
--state_record(state).
-
 %% API
 -export([start_link/1, set_element/2, get_state/1]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).

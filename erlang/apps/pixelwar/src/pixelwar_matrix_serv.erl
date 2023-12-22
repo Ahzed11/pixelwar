@@ -58,11 +58,14 @@ terminate(_Reason, _State) ->
     ok.
 
 code_change("0.1.0", State, _Extra) ->
+    logger:info("Code change ! ~w", [State]),
     Width = 128,
     Height = 128,
     IsInBound = fun({X, Y}, _V) -> X < Width andalso X >= 0 andalso Y < Height andalso Y >= 0 end,
     FilteredState = maps:filter(IsInBound, State),
-    {ok, #pixelwar_matrix{pixels=FilteredState, width=Width, height=Height}};
+    NewState = #pixelwar_matrix{pixels=FilteredState, width=Width, height=Height},
+    logger:info("New state ! ~w", [NewState]),
+    {ok, NewState};
 
 code_change({down, "0.1.0"}, State, _Extra) ->
     {ok, State#pixelwar_matrix.pixels};

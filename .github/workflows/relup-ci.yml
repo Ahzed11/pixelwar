@@ -56,8 +56,6 @@ jobs:
         echo "Launch before update test"
         ./apps/pixelwar/test/before_update.sh
 
-        relupci/bin/pixelwar unpack ${NEW_TAG}
-        relupci/bin/pixelwar install ${NEW_TAG}
         relupci/bin/pixelwar upgrade ${NEW_TAG}
         relupci/bin/pixelwar versions
 

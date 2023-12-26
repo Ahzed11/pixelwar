@@ -1,4 +1,5 @@
 -module(pixelwar_matrix_serv).
+-vsn("0.2.0").
 -behaviour(gen_server).
 
 -record(state, {

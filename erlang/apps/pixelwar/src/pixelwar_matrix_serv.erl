@@ -2,6 +2,10 @@
 -vsn("0.2.0").
 -behaviour(gen_server).
 
+-record('state_0_1_0', {
+    pixels = #{} :: #{{non_neg_integer(), non_neg_integer()} => non_neg_integer()}
+}).
+
 -record(state, {
     pixels = #{} :: #{{non_neg_integer(), non_neg_integer()} => non_neg_integer()},
     width = 128 :: non_neg_integer(),
@@ -65,11 +69,11 @@ code_change("0.1.0", State, _Extra) ->
     Width = 128,
     Height = 128,
     IsInBound = fun({X, Y}, _V) -> X < Width andalso X >= 0 andalso Y < Height andalso Y >= 0 end,
-    FilteredPixels = maps:filter(IsInBound, State#state.pixels),
+    FilteredPixels = maps:filter(IsInBound, State#'state_0_1_0'.pixels),
     {ok, #state{pixels=FilteredPixels, width=Width, height=Height}};
 
 code_change({down, "0.1.0"}, State, _Extra) ->
-    {ok, #state{pixels=State#state.pixels}};
+    {ok, #'state_0_1_0'{pixels=State#state.pixels}};
 
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.

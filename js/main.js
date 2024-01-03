@@ -4,11 +4,27 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
 }
 
+function sendDrawPixel(x, y, colorId) {
+    const binaryData = new Uint16Array([x, y, colorId]);
+    socket.send(
+        binaryData
+    );
+
+    drawPixel(x, y, colorId);
+}
+
+function drawPixel(x, y, colorId) {
+    const color = colors[colorId % colors.length];
+    ctx.fillStyle = color;
+    ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+}
+
+// ============================== Web Socket ==============================
+
 const socket = new WebSocket(
     "ws://localhost:8080/pixel",
     []
 );
-
 var hasReceivedState = false;
 
 socket.onopen = function (event) {
@@ -36,7 +52,46 @@ socket.onmessage = function (event) {
     reader.readAsArrayBuffer(data);
 }
 
-// Canvas
+// ============================== Color picker ==============================
+
+// https://lospec.com/palette-list/sweetie-16
+const colors = [
+    "#1a1c2c",
+    "#5d275d",
+    "#b13e53",
+    "#ef7d57",
+    "#ffcd75",
+    "#a7f070",
+    "#38b764",
+    "#257179",
+    "#29366f",
+    "#3b5dc9",
+    "#41a6f6",
+    "#73eff7",
+    "#f4f4f4",
+    "#94b0c2",
+    "#566c86",
+    "#333c57"
+];
+
+let selection = 0;
+const colorPicker = document.getElementById("color-picker");
+
+colors.forEach((color, index) => {
+    let colorButton = document.createElement("div");
+    colorButton.classList = ["color"];
+    colorButton.style.setProperty("background-color", color);
+
+    colorButton.onclick = (_event) => {
+        selection = index;
+        console.log(selection);
+    }
+
+    colorPicker.appendChild(colorButton);
+});
+
+// ============================== Canvas ==============================
+
 let grid = {
     width:64,
     height:64,
@@ -73,19 +128,5 @@ canvas.onclick = function (event) {
     const x = Math.floor((event.clientX - rect.left) / pixelSize);
     const y = Math.floor((event.clientY - rect.top) / pixelSize);
 
-    sendDrawPixel(x, y, 0);
-}
-
-function sendDrawPixel(x, y, color) {
-    const binaryData = new Uint16Array([x, y, color]);
-    socket.send(
-        binaryData
-    );
-
-    drawPixel(x, y, color);
-}
-
-function drawPixel(x, y, color) {
-    ctx.fillStyle = `rgb(${color}, ${color}, ${color})`;
-    ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+    sendDrawPixel(x, y, selection);
 }

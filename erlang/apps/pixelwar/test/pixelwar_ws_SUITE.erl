@@ -8,6 +8,9 @@ all() ->
 
 init_per_testcase(_Case, Config) ->
     application:load(pixelwar),
+    application:set_env(pixelwar, matrix_width, 128),
+    application:set_env(pixelwar, matrix_height, 128),
+
     application:load(gun),
     {ok, Apps} = application:ensure_all_started([pixelwar, gun]),
     [{apps, Apps} | Config].
@@ -72,8 +75,8 @@ send_pixel_get_state_test_case() ->
 
 send_pixel_get_state_test_case(_Config) ->
     {Pid, Ref, StreamRef} = wsConnect(),
-    gun:ws_send(Pid, StreamRef, {binary, <<42:16, 24:16, 1024:16>>}),
+    gun:ws_send(Pid, StreamRef, {binary, <<42:16/little, 24:16/little, 1024:16/little>>}),
     gun:ws_send(Pid, StreamRef, {binary, <<1:8>>}),
-    listener(Pid, {binary,<<42:16, 24:16, 1024:16>>}),
+    listener(Pid, {binary,<<42:16/little, 24:16/little, 1024:16/little>>}),
     wsClose(Pid, Ref),
     ok.

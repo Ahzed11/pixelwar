@@ -8,31 +8,25 @@ permissions:
   contents: read
 
 jobs:
-
   versions:
     runs-on: ubuntu-latest
 
     container:
       image: erlang:26.1.2
+      options: --user 1001
 
     steps:
+    - name: Check if we have tags
+      id: check
+      uses: ahzed11/has-tags-action@v1.1
+
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
-    - name: Check Tags Existence
-      run: |
-        if [ -z "$(git tag -l)" ]; then
-          echo "No tags found."
-          echo "TAGS_EXIST=0" >> $GITHUB_ENV
-        else
-          echo "Tags found: $(git tag -l)"
-          echo "TAGS_EXIST=1" >> $GITHUB_ENV
-        fi
-
     - name: Run validation checks and build releases
       working-directory: erlang
-      if: env.TAGS_EXIST == 1
+      if: ${{steps.check.outputs.hasTags == 'true'}}
       run: |
         ../scripts/check_versions $(/usr/bin/git log -1 --format='%H') > vsn.log
         cat vsn.log
@@ -48,16 +42,30 @@ jobs:
       
     - name: Run relup application
       working-directory: erlang
-      if: env.TAGS_EXIST == 1
+      if: ${{steps.check.outputs.hasTags == 'true'}}
       run: |
         mkdir relupci
         tar -xvf "${{ env.OLD_TAR }}" -C relupci
-        # use a simple "run the task in the background" setup #
-        GITHUB_TOKEN="${{ secrets.GH_TOKEN }}" GITHUB_URL="https://api.github.com/repos/${{ github.repository }}/releases/" relupci/bin/pixelwar daemon
-        TAG=$(echo "${{ env.NEW_TAR }}"  | sed -nr 's/^.*([0-9]+\.[0-9]+\.[0-9]+)\.tar\.gz$/\1/p')
+        MATRIX_WIDTH=128 MATRIX_HEIGHT=128 relupci/bin/pixelwar daemon
         cp "${{ env.NEW_TAR }}" relupci/releases/
 
-        relupci/bin/pixelwar unpack ${TAG}
-        relupci/bin/pixelwar install ${TAG}
-        relupci/bin/pixelwar upgrade ${TAG}
+
+        OLD_TAG=$(echo "${{ env.OLD_TAR }}"  | sed -nr 's/^.*([0-9]+\.[0-9]+\.[0-9]+)\.tar\.gz$/\1/p')
+        NEW_TAG=$(echo "${{ env.NEW_TAR }}"  | sed -nr 's/^.*([0-9]+\.[0-9]+\.[0-9]+)\.tar\.gz$/\1/p')
+        
+        echo "Launch before upgrade test"
+        ./test/before_upgrade.sh
+
+        relupci/bin/pixelwar upgrade ${NEW_TAG}
         relupci/bin/pixelwar versions
+
+        echo "Launch after upgrade test"
+        ./test/after_upgrade.sh
+
+        echo "Launch before downgrade test"
+        ./test/before_downgrade.sh
+
+        relupci/bin/pixelwar downgrade ${OLD_TAG}
+
+        echo "Launch after downgrade test"
+        ./test/after_downgrade.sh

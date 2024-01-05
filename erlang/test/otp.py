@@ -1,25 +1,30 @@
 import subprocess
+from robot.api.deco import not_keyword
+from robot.libraries.BuiltIn import BuiltIn
 
-RELEASE_PATH = "/home/ahzed11/ssd/Code/Erlang/pw/erlang/_build/default/rel/pixelwar/bin/pixelwar" # "./relupci/bin/pixelwar"
-
+@not_keyword
 def run(command):
     result = subprocess.run(command, shell = True, executable="/bin/bash", capture_output=True)
     stdout = result.stdout.decode("utf-8")
     return stdout
 
 def start_release():
+    RELEASE_PATH = BuiltIn().get_variable_value("${RELEASE_PATH}")
     START_COMMAND = f"MATRIX_WIDTH=128 MATRIX_HEIGHT=128 {RELEASE_PATH} daemon"
     return run(START_COMMAND)
 
 def stop_release():
+    RELEASE_PATH = BuiltIn().get_variable_value("${RELEASE_PATH}")
     START_COMMAND = f"{RELEASE_PATH} stop"
     return run(START_COMMAND)
 
 def send_rpc(module, function, arguments):
+    RELEASE_PATH = BuiltIn().get_variable_value("${RELEASE_PATH}")
     SEND_RPC_COMMAND = f"{RELEASE_PATH} rpc {module} {function} {arguments}"
     return run(SEND_RPC_COMMAND)
 
 def upgrade_release(version):
+    RELEASE_PATH = BuiltIn().get_variable_value("${RELEASE_PATH}")
     UPGRADE_COMMAND = f"{RELEASE_PATH} upgrade {version}"
     stdout = run(UPGRADE_COMMAND)
 
@@ -27,6 +32,7 @@ def upgrade_release(version):
         raise AssertionError(f"Command failed: {stdout}")
 
 def downgrade_release(version):
+    RELEASE_PATH = BuiltIn().get_variable_value("${RELEASE_PATH}")
     DOWNGRADE_COMMAND = f"{RELEASE_PATH} downgrade {version}"
     stdout = run(DOWNGRADE_COMMAND)
 

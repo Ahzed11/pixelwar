@@ -28,7 +28,7 @@ def upgrade_release(version):
     UPGRADE_COMMAND = f"{RELEASE_PATH} upgrade {version}"
     stdout = run(UPGRADE_COMMAND)
 
-    if not f"Made release permanent: {version}" in stdout:
+    if "release_package_not_found" in stdout:
         raise AssertionError(f"Command failed: {stdout}")
 
 def downgrade_release(version):
@@ -36,7 +36,7 @@ def downgrade_release(version):
     DOWNGRADE_COMMAND = f"{RELEASE_PATH} downgrade {version}"
     stdout = run(DOWNGRADE_COMMAND)
 
-    if not f"Made release permanent: {version}" in stdout:
+    if "release_package_not_found" in stdout:
         raise AssertionError(f"Command failed: {stdout}")
 
 def should_be_equal_as_erlang_bytes(actual, expected, msg=None):

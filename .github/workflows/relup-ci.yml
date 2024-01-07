@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: erlang:26.1.2
+      image: ahzed11/erlang-with-robot-framework
       options: --user 1001
 
     steps:
@@ -46,26 +46,9 @@ jobs:
       run: |
         mkdir relupci
         tar -xvf "${{ env.OLD_TAR }}" -C relupci
-        MATRIX_WIDTH=128 MATRIX_HEIGHT=128 relupci/bin/pixelwar daemon
         cp "${{ env.NEW_TAR }}" relupci/releases/
-
 
         OLD_TAG=$(echo "${{ env.OLD_TAR }}"  | sed -nr 's/^.*([0-9]+\.[0-9]+\.[0-9]+)\.tar\.gz$/\1/p')
         NEW_TAG=$(echo "${{ env.NEW_TAR }}"  | sed -nr 's/^.*([0-9]+\.[0-9]+\.[0-9]+)\.tar\.gz$/\1/p')
         
-        echo "Launch before upgrade test"
-        ./test/before_upgrade.sh
-
-        relupci/bin/pixelwar upgrade ${NEW_TAG}
-        relupci/bin/pixelwar versions
-
-        echo "Launch after upgrade test"
-        ./test/after_upgrade.sh
-
-        echo "Launch before downgrade test"
-        ./test/before_downgrade.sh
-
-        relupci/bin/pixelwar downgrade ${OLD_TAG}
-
-        echo "Launch after downgrade test"
-        ./test/after_downgrade.sh
+        robot ./test/otp.robot -v OLD_VERSION:${{OLD_TAG}} -v NEW_VERSION:${{NEW_TAG}} -v RELEASE_PATH:relupci/bin/pixelwar

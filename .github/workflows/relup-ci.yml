@@ -51,4 +51,4 @@ jobs:
         OLD_TAG=$(echo "${{ env.OLD_TAR }}"  | sed -nr 's/^.*([0-9]+\.[0-9]+\.[0-9]+)\.tar\.gz$/\1/p')
         NEW_TAG=$(echo "${{ env.NEW_TAR }}"  | sed -nr 's/^.*([0-9]+\.[0-9]+\.[0-9]+)\.tar\.gz$/\1/p')
         
-        robot -v OLD_VERSION:${OLD_TAG} -v NEW_VERSION:${NEW_TAG} -v RELEASE_PATH:relupci/bin/pixelwar ./test/otp.robot 
+        robot -o none -r none -l none -v OLD_VERSION:${OLD_TAG} -v NEW_VERSION:${NEW_TAG} -v RELEASE_PATH:relupci/bin/pixelwar ./test/otp.robot 

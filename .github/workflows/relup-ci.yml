@@ -52,7 +52,7 @@ jobs:
         
         mkdir ../_artifacts
 
-        python --version
+        python3 --version
         robot --version
 
         robot -d ../_artifacts -L trace -v OLD_VERSION:${OLD_TAG} -v NEW_VERSION:${NEW_TAG} -v RELEASE_PATH:relupci/bin/pixelwar ./test/otp.robot

@@ -21,37 +21,37 @@ set_element(Instance, Pixel) ->
 get_state(Instance) ->
     gen_server:call(Instance, get_state).
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 init({Width, Height}) ->
-    {ok, #state{pixels=#{}, width=Width, height=Height}}.
+    {ok, #state{pixels = #{}, width = Width, height = Height}}.
 
 handle_call(stop, _From, State) ->
     {stop, normal, stopped, State};
-
 handle_call(get_state, _From, State) ->
-    ToBinary = fun (K, V, Acc) ->
+    ToBinary = fun(K, V, Acc) ->
         {X, Y} = K,
         <<Acc/binary, X:16/little, Y:16/little, V:16/little>>
     end,
     AsBinary = maps:fold(ToBinary, <<>>, State#state.pixels),
     {reply, AsBinary, State};
-
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
 handle_cast({set_element, {X, Y, Color}}, State) ->
     Key = {X, Y},
     if
-        X >= State#state.width orelse X < 0 -> {noreply, State};
-        Y >= State#state.height orelse Y < 0 -> {noreply, State};
+        X >= State#state.width orelse X < 0 ->
+            {noreply, State};
+        Y >= State#state.height orelse Y < 0 ->
+            {noreply, State};
         true ->
             NewPixels = maps:put(Key, Color, State#state.pixels),
-            NewState = State#state{pixels=NewPixels, width=State#state.width, height=State#state.height},
+            NewState = State#state{
+                pixels = NewPixels, width = State#state.width, height = State#state.height
+            },
             {noreply, NewState}
     end;
-
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
@@ -67,10 +67,8 @@ code_change("0.1.0", State, _Extra) ->
     Height = 128,
     IsInBound = fun({X, Y}, _V) -> X < Width andalso X >= 0 andalso Y < Height andalso Y >= 0 end,
     FilteredPixels = maps:filter(IsInBound, Pixels),
-    {ok, #state{pixels=FilteredPixels, width=Width, height=Height}};
-
+    {ok, #state{pixels = FilteredPixels, width = Width, height = Height}};
 code_change({down, "0.1.0"}, State, _Extra) ->
     {ok, {state, State#state.pixels}};
-
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.

@@ -21,6 +21,8 @@ suite() ->
     ].
 
 init_per_suite(Config) ->
+    ct:print("Initializing suite..."),
+    ct:log(info, ?LOW_IMPORTANCE, "Initializing suite...", []),
     Docker = os:find_executable("docker"),
     build_image(),
     ReleaseName = ct:get_config(release_name),
@@ -136,6 +138,7 @@ build_image() ->
         " \"-kernel\", \"inet_dist_listen_min\", \"4445\","
         " \"-erl_epmd_port\", \"4445\","
         " \"-setcookie\", \"secret\"]\n",
+    ct:log(info, ?LOW_IMPORTANCE, "Dockerfile:\n~s", [Dockerfile]),
     ok = file:write_file(BuildScript, Dockerfile),
     DockerBuildResult = os:cmd("docker build -t " ++ ReleaseName ++ " ."),
     ct:log(info, ?LOW_IMPORTANCE, "Docker build:\n~s", [DockerBuildResult]).

@@ -7,7 +7,7 @@
 -include_lib("common_test/include/ct.hrl").
 
 groups() ->
-    [{upgrade_downgrade, [sequence], [before_upgrade_case, upgrade_case, downgrade_case]}].
+    [{upgrade_downgrade, [sequence], [before_upgrade_case, upgrade_case, after_upgrade_case, before_downgrade_case, downgrade_case, after_downgrade_case]}].
 
 all() ->
     [{group, upgrade_downgrade}].
@@ -63,12 +63,44 @@ upgrade_case(Config) ->
     Releases = peer:call(Peer, release_handler, which_releases, []),
     ct:print("Installed releases:\n~p", [Releases]).
 
+after_upgrade_case(Config) ->
+    Peer = ?config(peer, Config),
+
+    MatrixAsBin = peer:call(Peer, pixelwar_matrix_serv, get_state, [matrix]),
+    ?assertEqual(
+        MatrixAsBin,
+        <<12:16/little, 12:16/little, 12:16/little>>
+    ).
+
+before_downgrade_case(Config) ->
+    Peer = ?config(peer, Config),
+
+    peer:call(Peer, pixelwar_matrix_serv, set_element, [matrix, {13, 13, 13}]),
+    
+    MatrixAsBin = peer:call(Peer, pixelwar_matrix_serv, get_state, [matrix]),
+    ?assertEqual(
+        MatrixAsBin,
+        <<12:16/little, 12:16/little, 12:16/little, 13:16/little, 13:16/little, 13:16/little>>
+    ).
+
 downgrade_case(Config) ->
     Peer = ?config(peer, Config),
     OldVSN = ct:get_config(old_version),
 
     {ok, OldVSN, _} = peer:call(Peer, release_handler, install_release, [OldVSN]),
-    ok = peer:call(Peer, release_handler, make_permanent, [OldVSN]).
+    ok = peer:call(Peer, release_handler, make_permanent, [OldVSN]),
+
+    Releases = peer:call(Peer, release_handler, which_releases, []),
+    ct:print("Installed releases:\n~p", [Releases]).
+
+after_downgrade_case(Config) ->
+    Peer = ?config(peer, Config),
+
+    MatrixAsBin = peer:call(Peer, pixelwar_matrix_serv, get_state, [matrix]),
+    ?assertEqual(
+        MatrixAsBin,
+        <<12:16/little, 12:16/little, 12:16/little, 13:16/little, 13:16/little, 13:16/little>>
+    ).
 
 % ========== HELPERS ==========
 
@@ -106,4 +138,4 @@ build_image() ->
         " \"-setcookie\", \"secret\"]\n",
     ok = file:write_file(BuildScript, Dockerfile),
     DockerBuildResult = os:cmd("docker build -t " ++ ReleaseName ++ " ."),
-    ct:print("Docker build:\n~s", [DockerBuildResult]).
+    ct:log(info, ?LOW_IMPORTANCE, "Docker build:\n~s", [DockerBuildResult]).

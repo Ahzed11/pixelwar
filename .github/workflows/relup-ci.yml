@@ -16,7 +16,7 @@ jobs:
 
     container:
       image: ahzed11/erlang25-dind:latest
-      options: "--user 1001 --privileged"
+      options: "--privileged"
 
     steps:
     - name: Check if we have tags

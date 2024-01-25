@@ -14,10 +14,6 @@ jobs:
   versions:
     runs-on: ubuntu-latest
 
-    container:
-      image: ahzed11/erlang25-dind:latest
-      options: "--privileged"
-
     steps:
     - name: Check if we have tags
       id: check
@@ -26,6 +22,11 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
+
+    - uses: erlef/setup-beam@v1
+      with:
+        otp-version: '26'
+        rebar3-version: '3.22.1'
 
     - name: Run validation checks and build releases
       working-directory: erlang
@@ -53,20 +54,19 @@ jobs:
         mkdir relupci/releases/
         cp "${{ env.OLD_TAR }}" relupci/releases/
         cp "${{ env.NEW_TAR }}" relupci/releases/
+        ls relupci/releases
 
         OLD_TAG=$(echo "${{ env.OLD_TAR }}"  | sed -nr 's/^.*([0-9]+\.[0-9]+\.[0-9]+)\.tar\.gz$/\1/p')
         NEW_TAG=$(echo "${{ env.NEW_TAR }}"  | sed -nr 's/^.*([0-9]+\.[0-9]+\.[0-9]+)\.tar\.gz$/\1/p')
 
-        echo -e "{old_version, \"$OLD_TAG\"}.\n{new_version, \"$NEW_TAG\"}.\n{release_name, \"$RELNAME\"}.\n{release_dir, \"/__w/$RELNAME/$RELNAME/erlang/relupci/releases/\"}." >> ./test/config.config
+        RELEASE_DIR=$(readlink -f relupci/releases/)
+        echo -e "{old_version, \"$OLD_TAG\"}.\n{new_version, \"$NEW_TAG\"}.\n{release_name, \"$RELNAME\"}.\n{release_dir, \"$RELEASE_DIR\"}." >> ./test/config.config
         cat ./test/config.config
 
         cd test
         ls
         mkdir results
         rebar3 ct --dir . --verbose true --config ./config.config --logdir ./results --label relup-ci
-
-        status=$?
-        [ $status -ne 0 ] && exit 1
 
     - name: Upload test results
       uses: actions/upload-artifact@v3

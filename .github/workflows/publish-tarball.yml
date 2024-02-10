@@ -1,6 +1,4 @@
 name: Publish tarball
-# https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
-# https://grrr.tech/posts/2021/github-actions-assume-role/
 
 on:
   push:
@@ -29,6 +27,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
       - name: Fetch manifest version
         run: |
           NEW_VSN=${GITHUB_REF##*/v}
@@ -45,6 +44,7 @@ jobs:
           fi
       - run: |
           echo "${{ env.OLD_VSN }} -> ${{ env.VSN }} : ${{ env.RELUP }}"
+      
       - name: Build a tarball
         working-directory: erlang
         run: |
@@ -63,6 +63,7 @@ jobs:
           BUILD=$(ls _build/default/rel/${{ env.RELNAME }}/${{ env.RELNAME }}-*.tar.gz)
           mkdir ../_artifacts
           cp $BUILD ../_artifacts/${{ env.RELNAME }}-${{ env.VSN }}.tar.gz
+      
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -87,7 +88,7 @@ jobs:
           name: artifacts
           path: _artifacts
 
-      - name:  Upload release
+      - name: Upload release
         uses: ncipollo/release-action@v1
         with:
           artifacts: |

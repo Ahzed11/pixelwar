@@ -20,6 +20,21 @@ jobs:
     - name: Run validation checks
       working-directory: erlang
       run: rebar3 check
+    - name: Run unit tests
+      working-directory: erlang
+      run: |
+        mkdir results
+        rebar3 ct --dir apps --verbose true --logdir ./results --label erlang-ci
+    - name: Check coverage
+      working-directory: erlang
+      run: rebar3 cover -v
     - name: Release can be built
       working-directory: erlang
       run: rebar3 do release, tar
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: results
+        path: ./erlang/results
+        retention-days: 30

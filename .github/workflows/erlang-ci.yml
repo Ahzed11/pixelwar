@@ -24,10 +24,7 @@ jobs:
       working-directory: erlang
       run: |
         mkdir results
-        rebar3 ct --dir apps --verbose true --logdir ./results --label erlang-ci
-    - name: Check coverage
-      working-directory: erlang
-      run: rebar3 cover -v
+        rebar3 ct --dir apps --verbose true --logdir ./results --label erlang-ci --cover true
     - name: Release can be built
       working-directory: erlang
       run: rebar3 do release, tar

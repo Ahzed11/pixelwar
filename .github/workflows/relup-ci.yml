@@ -7,9 +7,6 @@ on:
 permissions:
   contents: read
 
-env:
-  RELNAME: pixelwar
-
 jobs:
   versions:
     runs-on: ubuntu-latest
@@ -32,9 +29,9 @@ jobs:
       working-directory: erlang
       if: ${{steps.check.outputs.hasTags == 'true'}}
       run: |
-        git config --global --add safe.directory /__w/pixelwar/pixelwar
+        git config --global --add safe.directory /__w/${{vars.RELNAME}}/${{vars.RELNAME}}
 
-        ../scripts/check_versions $(/usr/bin/git log -1 --format='%H') > vsn.log
+        ../scripts/check_versions ${{vars.RELNAME}} $(/usr/bin/git log -1 --format='%H') > vsn.log
         cat vsn.log
         cat vsn.log | awk '/Generated appup/ { appup=1 }
                            /relup successfully created!/ { relup=1 }
@@ -59,7 +56,7 @@ jobs:
         NEW_TAG=$(echo "${{ env.NEW_TAR }}"  | sed -nr 's/^.*([0-9]+\.[0-9]+\.[0-9]+)\.tar\.gz$/\1/p')
 
         RELEASE_DIR=$(readlink -f relupci/releases/)
-        echo -e "{old_version, \"$OLD_TAG\"}.\n{new_version, \"$NEW_TAG\"}.\n{release_name, \"$RELNAME\"}.\n{release_dir, \"$RELEASE_DIR\"}." >> ./test/config.config
+        echo -e "{old_version, \"$OLD_TAG\"}.\n{new_version, \"$NEW_TAG\"}.\n{release_name, \"${{vars.RELNAME}}\"}.\n{release_dir, \"$RELEASE_DIR\"}." >> ./test/config.config
 
         cd test
         mkdir results

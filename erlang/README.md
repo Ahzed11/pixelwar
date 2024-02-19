@@ -1,9 +1,9 @@
-erlang
-=====
+# Pixelwar
 
-An OTP application
+This project allows me to discover what problems I might face when trying to do CI/CD in Erlang.
 
-Build
------
+## Configuration
 
-    $ rebar3 compile
+In your [repository variables](https://docs.github.com/en/actions/learn-github-actions/variables#creating-configuration-variables-for-a-repository), set those variables up.
+
+- `RELNAME`: Name of the release

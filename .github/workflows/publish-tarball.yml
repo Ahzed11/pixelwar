@@ -4,9 +4,6 @@ on:
   push:
     tags: [ "v[0-9]+.[0-9]+.[0-9]+" ]
 
-env:
-  RELNAME: pixelwar
-
 jobs:
 
   build:
@@ -55,14 +52,14 @@ jobs:
             git checkout $ORIG
             rebar3 do clean -a, release
             rebar3 appup generate
-            rebar3 relup -n ${{ env.RELNAME }} -v ${{ env.VSN }} -u ${{ env.OLD_VSN }}
+            rebar3 relup -n ${{ vars.RELNAME }} -v ${{ env.VSN }} -u ${{ env.OLD_VSN }}
           else
             rebar3 release
           fi
           rebar3 tar
-          BUILD=$(ls _build/default/rel/${{ env.RELNAME }}/${{ env.RELNAME }}-*.tar.gz)
+          BUILD=$(ls _build/default/rel/${{ vars.RELNAME }}/${{ vars.RELNAME }}-*.tar.gz)
           mkdir ../_artifacts
-          cp $BUILD ../_artifacts/${{ env.RELNAME }}-${{ env.VSN }}.tar.gz
+          cp $BUILD ../_artifacts/${{ vars.RELNAME }}-${{ env.VSN }}.tar.gz
       
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3

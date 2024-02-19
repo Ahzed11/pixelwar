@@ -1,6 +1,7 @@
 [
   {pixelwar, [
-    
+    {matrix_width, ${MATRIX_WIDTH:-128}},
+    {matrix_height, ${MATRIX_HEIGHT:-128}}
   ]},
   {kernel, [
     {logger_level, info},

@@ -11,9 +11,10 @@
 
 start(_StartType, _StartArgs) ->
     Dispatch = cowboy_router:compile([
-        {'_', [{"/pixel", pixelwar_pixel_handler, []}]}    
+        {'_', [{"/pixel", pixelwar_pixel_handler, []}]}
     ]),
-    {ok, _} = cowboy:start_clear(my_http_listener,
+    {ok, _} = cowboy:start_clear(
+        my_http_listener,
         [{port, 8080}],
         #{env => #{dispatch => Dispatch}}
     ),

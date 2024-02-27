@@ -131,7 +131,7 @@ build_image() ->
         "WORKDIR /opt/" ++ ReleaseName ++  "\n"
         "COPY [\"" ++ OldReleaseName ++ ".tar.gz\", \"" ++ NewReleaseName ++ ".tar.gz\"" ++ ", \"/tmp/\"]\n"
         "RUN tar -zxvf /tmp/" ++ OldReleaseName ++ ".tar.gz -C /opt/" ++ ReleaseName ++ "\n"
-        "RUN mkdir /opt/pixelwar/releases/" ++ NewVSN ++ "\n"
+        "RUN mkdir /opt/" ++ ReleaseName ++ "/releases/" ++ NewVSN ++ "\n"
         "RUN cp /tmp/" ++ NewReleaseName ++ ".tar.gz /opt/" ++ ReleaseName ++ "/releases/" ++ NewVSN ++ "/" ++ ReleaseName ++ ".tar.gz\n"
         "ENTRYPOINT [\"/opt/" ++ ReleaseName ++ "/erts-" ++ erlang:system_info(version) ++
         "/bin/dyn_erl\", \"-boot\", \"/opt/" ++ ReleaseName ++ "/releases/" ++ OldVSN ++ "/start\","

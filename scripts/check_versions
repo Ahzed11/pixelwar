@@ -2,9 +2,14 @@
 -module(check_versions).
 -mode(compile).
 
-main([]) ->
-    main([os:cmd("git rev-parse --abbrev-ref HEAD")]);
-main([Branch]) ->
+usage() ->
+    io:format("usage: Relname Branch\n"),
+    halt(1).
+
+main([Relname]) ->
+    main([Relname, os:cmd("git rev-parse --abbrev-ref HEAD")]);
+
+main([Relname, Branch]) ->
     SrcPrefix = "apps/",
     "v"++_LastVsn = LastTag = string:trim(os:cmd("git tag -l --sort=committerdate 'v*.*.*' | tail -n 1")),
     io:format("switching to ~ts and back to ~ts~n", [LastTag, Branch]),
@@ -69,12 +74,15 @@ main([Branch]) ->
     end,
     %% Build relup phase
     io:format("~ts~n", [os:cmd("rebar3 appup generate")]),
-    io:format("~ts~n", [os:cmd("rebar3 relup -n pixelwar -v "++NewStr++" -u "++OldStr)]),
+    io:format("~ts~n", [os:cmd("rebar3 relup -n"++ Relname ++" -v "++NewStr++" -u "++OldStr)]),
     io:format("~ts~n", [os:cmd("rebar3 tar")]),
-    io:format("OLD: _build/default/rel/pixelwar/pixelwar-~ts.tar.gz~n"
-              "NEW: _build/default/rel/pixelwar/pixelwar-~ts.tar.gz~n",
+    io:format("OLD: _build/default/rel/"++Relname++"/"++Relname++"-~ts.tar.gz~n"
+              "NEW: _build/default/rel/"++Relname++"/"++Relname++"-~ts.tar.gz~n",
               [OldStr, NewStr]),
-    init:stop(0).
+    init:stop(0);
+
+main(_) ->
+    usage().
 
 to_vsn(Str) ->
     [Restart, Relup, Reload] = [list_to_integer(S) || S <- string:lexemes(Str, ".")],

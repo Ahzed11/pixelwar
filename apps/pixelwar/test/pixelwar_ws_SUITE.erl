@@ -8,9 +8,6 @@ all() ->
 
 init_per_testcase(_Case, Config) ->
     application:load(pixelwar),
-    application:set_env(pixelwar, matrix_width, 128),
-    application:set_env(pixelwar, matrix_height, 128),
-
     application:load(gun),
     {ok, Apps} = application:ensure_all_started([pixelwar, gun]),
     [{apps, Apps} | Config].
@@ -44,26 +41,23 @@ listener(Pid, ExpectedFrame) ->
             ?assertEqual(ExpectedFrame, ReceivedFrame);
         Msg ->
             ct:print("Unexpected message ~p", [Msg])
-    after 200 -> ?assertEqual(timeout, ExpectedFrame)
+    after
+        200 -> ?assertEqual(timeout, ExpectedFrame)
     end.
 
 receive_state_test_case() ->
-    [
-        {doc, "Tries to receive the current state of the matrix"},
-        {timetrap, timer:seconds(5)}
-    ].
+    [{doc, "Tries to receive the current state of the matrix"},
+     {timetrap, timer:seconds(5)}].
 receive_state_test_case(_Config) ->
     {Pid, Ref, StreamRef} = wsConnect(),
     gun:ws_send(Pid, StreamRef, {binary, <<1:8>>}),
-    listener(Pid, {binary, <<>>}),
+    listener(Pid, {binary,<<>>}),
     wsClose(Pid, Ref),
     ok.
 
 send_pixel_test_case() ->
-    [
-        {doc, "Tries to send a pixel and then verifies that we receive nothing"},
-        {timetrap, timer:seconds(5)}
-    ].
+    [{doc, "Tries to send a pixel and then verifies that we receive nothing"},
+     {timetrap, timer:seconds(5)}].
 
 send_pixel_test_case(_Config) ->
     {Pid, Ref, StreamRef} = wsConnect(),
@@ -73,15 +67,13 @@ send_pixel_test_case(_Config) ->
     ok.
 
 send_pixel_get_state_test_case() ->
-    [
-        {doc, "Tries to send a pixel and then verifies the current state"},
-        {timetrap, timer:seconds(5)}
-    ].
+    [{doc, "Tries to send a pixel and then verifies the current state"},
+     {timetrap, timer:seconds(5)}].
 
 send_pixel_get_state_test_case(_Config) ->
     {Pid, Ref, StreamRef} = wsConnect(),
-    gun:ws_send(Pid, StreamRef, {binary, <<42:16/little, 24:16/little, 1024:16/little>>}),
+    gun:ws_send(Pid, StreamRef, {binary, <<42:16, 24:16, 1024:16>>}),
     gun:ws_send(Pid, StreamRef, {binary, <<1:8>>}),
-    listener(Pid, {binary, <<42:16/little, 24:16/little, 1024:16/little>>}),
+    listener(Pid, {binary,<<42:16, 24:16, 1024:16>>}),
     wsClose(Pid, Ref),
     ok.

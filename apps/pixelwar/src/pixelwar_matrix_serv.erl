@@ -22,8 +22,8 @@ get_state(Instance) ->
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-init({Width, Height}) ->
-    {ok, Matrix} = pixelwar_matrix:create(Width, Height),
+init(_Args) ->
+    {ok, Matrix} = pixelwar_matrix:create(),
     {ok, #state{matrix = Matrix}}.
 
 handle_call(stop, _From, State) ->

@@ -8,13 +8,9 @@ all() ->
 
 init_per_testcase(_Case, Config) ->
     application:load(pixelwar),
-    Width = 128,
-    Height = 128,
-    application:set_env(pixelwar, matrix_width, Width),
-    application:set_env(pixelwar, matrix_height, Height),
 
     {ok, Apps} = application:ensure_all_started([pixelwar]),
-    [{apps, Apps}, {width, Width}, {height, Height} | Config].
+    [{apps, Apps} | Config].
 
 end_per_testcase(_Case, Config) ->
     [application:stop(App) || App <- lists:reverse(?config(apps, Config))],

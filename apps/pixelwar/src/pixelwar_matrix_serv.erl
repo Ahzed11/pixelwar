@@ -55,7 +55,7 @@ terminate(_Reason, _State) ->
 
 code_change("0.2.0", State, _Extra) ->
     {_, Pixels, Width, Height} = State,
-    Matrix = pixelwar_matrix:create(Pixels, Width, Height),
+    {ok, Matrix} = pixelwar_matrix:create(Pixels, Width, Height),
     {ok, #state{matrix = Matrix}};
 
 code_change({down, "0.2.0"}, State, _Extra) ->

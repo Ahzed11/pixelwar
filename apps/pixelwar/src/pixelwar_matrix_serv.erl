@@ -37,9 +37,12 @@ handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
 handle_cast({set_element, {X, Y, Color}}, State) ->
-    {ok, NewMatrix} = pixelwar_matrix:set_pixel(State#state.matrix, X, Y, Color),
-    NewState = State#state{matrix=NewMatrix},
-    {noreply, NewState};
+    case pixelwar_matrix:set_pixel(State#state.matrix, X, Y, Color) of
+        {ok, NewMatrix} ->
+            NewState = State#state{matrix=NewMatrix},
+            {noreply, NewState};
+        _ -> {noreply, State}
+    end;
 
 handle_cast(_Msg, State) ->
     {noreply, State}.

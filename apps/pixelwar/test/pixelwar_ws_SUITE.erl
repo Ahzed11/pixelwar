@@ -8,8 +8,6 @@ all() ->
 
 init_per_testcase(_Case, Config) ->
     application:load(pixelwar),
-    application:set_env(pixelwar, matrix_width, 128),
-    application:set_env(pixelwar, matrix_height, 128),
 
     application:load(gun),
     {ok, Apps} = application:ensure_all_started([pixelwar, gun]),

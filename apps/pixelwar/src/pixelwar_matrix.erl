@@ -3,7 +3,7 @@
 -export([create/0, create/2, create/3, to_binary/1, set_pixel/4, resize/3]).
 
 create() ->
-    Matrix = #matrix{pixels = #{}, width = 128, height = 128},
+    Matrix = #matrix{pixels = #{}, width = ?DEFAULT_SIZE, height = ?DEFAULT_SIZE},
     {ok, Matrix}.
 
 create(Width, _Height) when Width =< 0 -> {error, invalid_width};

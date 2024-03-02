@@ -8,11 +8,11 @@
 }).
 
 %% API
--export([start_link/1, set_element/2, get_state/1]).
+-export([start_link/0, set_element/2, get_state/1]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 
-start_link(Args) ->
-    gen_server:start_link({local, matrix}, ?MODULE, Args, []).
+start_link() ->
+    gen_server:start_link({local, matrix}, ?MODULE, [], []).
 
 set_element(Instance, Pixel) ->
     gen_server:cast(Instance, {set_element, Pixel}).

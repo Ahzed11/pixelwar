@@ -43,12 +43,12 @@ before_upgrade_case(Config) ->
     Peer = ?config(peer, Config),
 
     peer:call(Peer, pixelwar_matrix_serv, set_element, [matrix, {12, 12, 12}]),
-    peer:call(Peer, pixelwar_matrix_serv, set_element, [matrix, {222, 222, 222}]),
+    peer:call(Peer, pixelwar_matrix_serv, set_element, [matrix, {112, 112, 112}]),
     
     MatrixAsBin = peer:call(Peer, pixelwar_matrix_serv, get_state, [matrix]),
     ?assertEqual(
         MatrixAsBin,
-        <<12:16/little, 12:16/little, 12:16/little, 222:16/little, 222:16/little, 222:16/little>>
+        <<12:16/little, 12:16/little, 12:16/little, 112:16/little, 112:16/little, 112:16/little>>
     ).
 
 upgrade_case(Config) ->
@@ -71,7 +71,7 @@ after_upgrade_case(Config) ->
     MatrixAsBin = peer:call(Peer, pixelwar_matrix_serv, get_state, [matrix]),
     ?assertEqual(
         MatrixAsBin,
-        <<12:16/little, 12:16/little, 12:16/little>>
+        <<12:16/little, 12:16/little, 12:16/little, 112:16/little, 112:16/little, 112:16/little>>
     ).
 
 before_downgrade_case(Config) ->
@@ -82,7 +82,7 @@ before_downgrade_case(Config) ->
     MatrixAsBin = peer:call(Peer, pixelwar_matrix_serv, get_state, [matrix]),
     ?assertEqual(
         MatrixAsBin,
-        <<12:16/little, 12:16/little, 12:16/little, 13:16/little, 13:16/little, 13:16/little>>
+        <<12:16/little, 12:16/little, 12:16/little, 112:16/little, 112:16/little, 112:16/little, 13:16/little, 13:16/little, 13:16/little>>
     ).
 
 downgrade_case(Config) ->
@@ -101,7 +101,7 @@ after_downgrade_case(Config) ->
     MatrixAsBin = peer:call(Peer, pixelwar_matrix_serv, get_state, [matrix]),
     ?assertEqual(
         MatrixAsBin,
-        <<12:16/little, 12:16/little, 12:16/little, 13:16/little, 13:16/little, 13:16/little>>
+        <<12:16/little, 12:16/little, 12:16/little, 112:16/little, 112:16/little, 112:16/little, 13:16/little, 13:16/little, 13:16/little>>
     ).
 
 % ========== HELPERS ==========

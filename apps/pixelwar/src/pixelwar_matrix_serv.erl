@@ -8,19 +8,17 @@
 }).
 
 %% API
--export([start_link/1, set_element/2, get_state/1, stop/1]).
+-export([start_link/1, set_element/2, get_state/1]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 
-start_link(ChannelName) ->
-    gen_server:start_link({global, ChannelName}, ?MODULE, [], []).
+start_link(ServerName) ->
+    gen_server:start_link({global, ServerName}, ?MODULE, [], []).
 
-set_element(ChannelName, Pixel) ->
-    gen_server:cast({global, ChannelName}, {set_element, Pixel}).
+set_element(ServerName, Pixel) ->
+    gen_server:cast({global, ServerName}, {set_element, Pixel}).
 
-get_state(ChannelName) ->
-    gen_server:call({global, ChannelName}, get_state).
-
-stop(ChannelName) -> gen_server:call({global, ChannelName}, stop).
+get_state(ServerName) ->
+    gen_server:call({global, ServerName}, get_state).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -29,7 +27,7 @@ init(_Args) ->
     {ok, #state{matrix = Matrix}}.
 
 handle_call(stop, _From, State) ->
-    {stop, normal, stopped, State};
+    {stop, normal, State};
 
 handle_call(get_state, _From, State) ->
     Binary = pixelwar_matrix:to_binary(State#state.matrix),

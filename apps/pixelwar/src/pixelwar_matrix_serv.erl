@@ -8,17 +8,19 @@
 }).
 
 %% API
--export([start_link/0, set_element/2, get_state/1]).
+-export([start_link/1, set_element/2, get_state/1, stop/1]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 
-start_link() ->
-    gen_server:start_link({local, matrix}, ?MODULE, [], []).
+start_link(ChannelName) ->
+    gen_server:start_link({global, ChannelName}, ?MODULE, [], []).
 
-set_element(Instance, Pixel) ->
-    gen_server:cast(Instance, {set_element, Pixel}).
+set_element(ChannelName, Pixel) ->
+    gen_server:cast({global, ChannelName}, {set_element, Pixel}).
 
-get_state(Instance) ->
-    gen_server:call(Instance, get_state).
+get_state(ChannelName) ->
+    gen_server:call({global, ChannelName}, get_state).
+
+stop(ChannelName) -> gen_server:call({global, ChannelName}, stop).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -49,6 +51,9 @@ handle_cast(_Msg, State) ->
 
 handle_info(_Info, State) ->
     {noreply, State}.
+
+terminate(normal, _State) ->
+    ok;
 
 terminate(_Reason, _State) ->
     ok.

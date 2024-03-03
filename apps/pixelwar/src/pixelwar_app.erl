@@ -11,13 +11,15 @@
 
 start(_StartType, _StartArgs) ->
     Dispatch = cowboy_router:compile([
-        {'_', [{"/pixel", pixelwar_pixel_handler, []}]}
+        {'_', [{"/:room", pixelwar_pixel_handler, []}]}
     ]),
+    persistent_term:put(pixelwar_dispatch, Dispatch),
     {ok, _} = cowboy:start_clear(
         my_http_listener,
         [{port, 8080}],
-        #{env => #{dispatch => Dispatch}}
+        #{env => #{dispatch => {persistent_term, pixelwar_dispatch}}}
     ),
+    
     pixelwar_sup:start_link().
 
 stop(_State) ->

@@ -38,7 +38,7 @@ jobs:
                                  if (!relup && !restart) { print "relup missing"; exit 1} }'
         OLD=$(cat vsn.log | awk '/OLD:/ {print $2}')
         NEW=$(cat vsn.log | awk '/NEW:/ {print $2}')
-        IS_RESTART=$(awk '/RESTART version bumped, ignoring relup check./ {found=1; exit} END {if(found) print "true"; else print "false"}' vsn.log)
+        IS_RESTART=$(cat vsn.log | awk '/RESTART version bumped, ignoring relup check./ {found=1; exit} END {if(found) print "true"; else print "false"}')
         echo "OLD_TAR=$OLD" >> $GITHUB_ENV
         echo "NEW_TAR=$NEW" >> $GITHUB_ENV
         echp "IS_RESTART=$IS_RESTART" >> $GITHUB_ENV
@@ -65,7 +65,7 @@ jobs:
 
     - name: Upload test results
       uses: actions/upload-artifact@v3
-      if: always()
+      if: ${{env.IS_RESTART == 'true'}}
       with:
         name: results
         path: ./test/results

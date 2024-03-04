@@ -1,5 +1,5 @@
 -module(pixelwar_matrix_serv).
--vsn("0.3.0").
+-vsn("0.4.0").
 -behaviour(gen_server).
 -include_lib("matrix.hrl").
 
@@ -55,15 +55,6 @@ terminate(normal, _State) ->
 
 terminate(_Reason, _State) ->
     ok.
-
-code_change("0.2.0", State, _Extra) ->
-    {_, Pixels, Width, Height} = State,
-    {ok, Matrix} = pixelwar_matrix:create(Width, Height, Pixels),
-    {ok, #state{matrix = Matrix}};
-
-code_change({down, "0.2.0"}, State, _Extra) ->
-    {_, {_, Pixels, Width, Height}} = State,
-    {ok, {state, Pixels, Width, Height}};
 
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.

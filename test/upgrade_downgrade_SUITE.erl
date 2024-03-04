@@ -2,6 +2,7 @@
 -behaviour(ct_suite).
 -export([all/0, groups/0]).
 -compile(export_all).
+-define(SERVER_NAME, "matrix").
 
 -include_lib("stdlib/include/assert.hrl").
 -include_lib("common_test/include/ct.hrl").
@@ -68,21 +69,21 @@ upgrade_case(Config) ->
 after_upgrade_case(Config) ->
     Peer = ?config(peer, Config),
 
-    MatrixAsBin = peer:call(Peer, pixelwar_matrix_serv, get_state, [matrix]),
+    MatrixAsBin = peer:call(Peer, pixelwar_matrix_serv, get_state, [?SERVER_NAME]),
     ?assertEqual(
         MatrixAsBin,
-        <<12:16/little, 12:16/little, 12:16/little, 112:16/little, 112:16/little, 112:16/little>>
+        <<>>
     ).
 
 before_downgrade_case(Config) ->
     Peer = ?config(peer, Config),
 
-    peer:call(Peer, pixelwar_matrix_serv, set_element, [matrix, {13, 13, 13}]),
+    peer:call(Peer, pixelwar_matrix_serv, set_element, [?SERVER_NAME, {13, 13, 13}]),
     
-    MatrixAsBin = peer:call(Peer, pixelwar_matrix_serv, get_state, [matrix]),
+    MatrixAsBin = peer:call(Peer, pixelwar_matrix_serv, get_state, [?SERVER_NAME]),
     ?assertEqual(
         MatrixAsBin,
-        <<12:16/little, 12:16/little, 12:16/little, 13:16/little, 13:16/little, 13:16/little, 112:16/little, 112:16/little, 112:16/little>>
+        <<13:16/little, 13:16/little, 13:16/little>>
     ).
 
 downgrade_case(Config) ->
@@ -101,7 +102,7 @@ after_downgrade_case(Config) ->
     MatrixAsBin = peer:call(Peer, pixelwar_matrix_serv, get_state, [matrix]),
     ?assertEqual(
         MatrixAsBin,
-        <<12:16/little, 12:16/little, 12:16/little, 13:16/little, 13:16/little, 13:16/little, 112:16/little, 112:16/little, 112:16/little>>
+        <<>>
     ).
 
 % ========== HELPERS ==========

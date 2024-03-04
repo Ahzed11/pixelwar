@@ -69,6 +69,8 @@ upgrade_case(Config) ->
 after_upgrade_case(Config) ->
     Peer = ?config(peer, Config),
 
+    pixelwar_sup:add_matrix(?SERVER_NAME),
+
     MatrixAsBin = peer:call(Peer, pixelwar_matrix_serv, get_state, [?SERVER_NAME]),
     ?assertEqual(
         MatrixAsBin,

@@ -7,7 +7,7 @@
 
 -behaviour(application).
 
--export([start/2, prep_stop/1, stop/1]).
+-export([start/2, stop/1]).
 
 start(_StartType, _StartArgs) ->
     Dispatch = cowboy_router:compile([
@@ -22,9 +22,5 @@ start(_StartType, _StartArgs) ->
     
     pixelwar_sup:start_link().
 
-prep_stop(State) ->
-    ok = application:stop(cowboy),
-    State.
-
 stop(_State) ->
-    ok.
+    ok = application:stop(cowboy).

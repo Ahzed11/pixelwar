@@ -1,10 +1,4 @@
 {"0.4.0", % New version
- [{"0.3.0", [
-    {remove_application, pixelwar},
-    {add_application, pixelwar}
-    ]}],
- [{"0.3.0", [
-    {remove_application, pixelwar},
-    {add_application, pixelwar}
-    ]}]
+ [{"0.3.0", [{restart_application, pixelwar}]}],
+ [{"0.3.0", [{restart_application, pixelwar}]}]
 }.

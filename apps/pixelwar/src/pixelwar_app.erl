@@ -23,7 +23,7 @@ start(_StartType, _StartArgs) ->
     pixelwar_sup:start_link().
 
 prep_stop(State) ->
-    ok = cowboy:stop_listener(my_http_listener),
+    ok = application:stop(cowboy),
     State.
 
 stop(_State) ->

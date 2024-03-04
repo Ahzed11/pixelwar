@@ -11,6 +11,9 @@ init_per_testcase(_Case, Config) ->
 
     application:load(gun),
     {ok, Apps} = application:ensure_all_started([pixelwar, gun]),
+    
+    pixelwar_sup:add_matrix("matrix"),
+    
     [{apps, Apps} | Config].
 
 end_per_testcase(_Case, Config) ->

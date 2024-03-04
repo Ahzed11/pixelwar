@@ -1,8 +1,16 @@
 {"0.4.0", % New version
  [{"0.3.0", [
-    {restart_application, pixelwar}
+    {restart_application, pixelwar},
+    {update, pixelwar_app},
+    {update, pixelwar_sup},
+    {update, pixelwar_matrix_serv},
+    {update, pixelwar_pixel_handler}
     ]}],
  [{"0.3.0", [
-    {restart_application, pixelwar}
+    {restart_application, pixelwar},
+    {update, pixelwar_app},
+    {update, pixelwar_sup},
+    {update, pixelwar_matrix_serv},
+    {update, pixelwar_pixel_handler}
     ]}]
 }.

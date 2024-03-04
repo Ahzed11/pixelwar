@@ -23,4 +23,4 @@ start(_StartType, _StartArgs) ->
     pixelwar_sup:start_link().
 
 stop(_State) ->
-    ok = application:stop(cowboy).
+    ok.

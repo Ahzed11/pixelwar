@@ -45,7 +45,7 @@ jobs:
         echo after
         echo "OLD_TAR=$OLD" >> $GITHUB_ENV
         echo "NEW_TAR=$NEW" >> $GITHUB_ENV
-        echp "IS_RESTART=$IS_RESTART" >> $GITHUB_ENV
+        echo "IS_RESTART=$IS_RESTART" >> $GITHUB_ENV
 
       
     - name: Test upgrade and downgrade of the application

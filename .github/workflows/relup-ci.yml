@@ -46,9 +46,8 @@ jobs:
       
     - name: Test upgrade and downgrade of the application
       working-directory: .
-      if: ${{steps.check.outputs.hasTags == 'true'}}
+      if: ${{steps.check.outputs.hasTags == 'true' && env.IS_RESTART == 'false'}}
       run: |
-        echo "${{ env.OLD_TAR }}" 
         mkdir relupci
         mkdir relupci/releases/
         cp "${{ env.OLD_TAR }}" relupci/releases/
@@ -66,7 +65,7 @@ jobs:
 
     - name: Upload test results
       uses: actions/upload-artifact@v3
-      if: always()
+      if: ${{steps.check.outputs.hasTags == 'true' && env.IS_RESTART == 'false'}}
       with:
         name: results
         path: ./test/results

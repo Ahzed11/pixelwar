@@ -1,6 +1,6 @@
 {application, pixelwar, [
     {description, "An OTP application"},
-    {vsn, "0.4.0"},
+    {vsn, "1.0.0"},
     {registered, []},
     {mod, {pixelwar_app, []}},
     {applications, [

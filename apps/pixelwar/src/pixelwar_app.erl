@@ -14,7 +14,7 @@ start(_StartType, _StartArgs) ->
         {'_', [{"/:room", pixelwar_pixel_handler, []}]}
     ]),
     persistent_term:put(pixelwar_dispatch, Dispatch),
-    cowboy:start_clear(
+    {ok, _} = cowboy:start_clear(
         my_http_listener,
         [{port, 8080}],
         #{env => #{dispatch => {persistent_term, pixelwar_dispatch}}}

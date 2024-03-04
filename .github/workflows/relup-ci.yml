@@ -40,7 +40,9 @@ jobs:
         echo after
         OLD=$(cat vsn.log | awk '/OLD:/ {print $2}')
         NEW=$(cat vsn.log | awk '/NEW:/ {print $2}')
+        echo before
         IS_RESTART=$(cat vsn.log | awk '/RESTART version bumped, ignoring relup check./ {found=1; exit} END {if(found) print "true"; else print "false"}')
+        echo after
         echo "OLD_TAR=$OLD" >> $GITHUB_ENV
         echo "NEW_TAR=$NEW" >> $GITHUB_ENV
         echp "IS_RESTART=$IS_RESTART" >> $GITHUB_ENV

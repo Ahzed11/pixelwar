@@ -1,5 +1,5 @@
 -module(pixelwar_matrix_serv).
--vsn("1.0.0").
+-vsn("1.0.1").
 -behaviour(gen_server).
 -include_lib("matrix.hrl").
 

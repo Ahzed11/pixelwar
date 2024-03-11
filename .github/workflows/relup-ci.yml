@@ -80,4 +80,4 @@ jobs:
       if: ${{steps.check.outputs.hasTags == 'true' && env.IS_RESTART == 'false'}}
       with:
         files: |
-          ./results/**/*.xml
+          ./test/results/**/*.xml

@@ -39,7 +39,7 @@ jobs:
         path: ./results
         compression-level: 9
         retention-days: 30
-    - name: Publish Test Results
+    - name: Erlang CI results
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
       with:

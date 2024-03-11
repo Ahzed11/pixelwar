@@ -75,7 +75,7 @@ jobs:
         compression-level: 9 
         retention-days: 30
 
-    - name: Publish Test Results
+    - name: Relup CI results
       uses: ${{steps.check.outputs.hasTags == 'true' && env.IS_RESTART == 'false'}}
       if: always()
       with:

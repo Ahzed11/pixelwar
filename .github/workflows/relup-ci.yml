@@ -79,5 +79,6 @@ jobs:
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: ${{steps.check.outputs.hasTags == 'true' && env.IS_RESTART == 'false'}}
       with:
+        check_name: Relup CI results
         files: |
           ./test/results/**/*.xml

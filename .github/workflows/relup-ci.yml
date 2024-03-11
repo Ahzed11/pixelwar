@@ -6,6 +6,9 @@ on:
 
 permissions:
   contents: read
+  issues: read
+  checks: write
+  pull-requests: write
 
 jobs:
   versions:
@@ -71,3 +74,10 @@ jobs:
         path: ./test/results
         compression-level: 9 
         retention-days: 30
+
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        files: |
+          ./results/**/*.xml

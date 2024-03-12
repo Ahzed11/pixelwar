@@ -30,4 +30,5 @@ build_image({OldVSN, NewVSN}, ReleaseName, ReleaseDir) ->
         " \"-kernel\", \"inet_dist_listen_min\", \"4445\","
         " \"-erl_epmd_port\", \"4445\","
         " \"-setcookie\", \"secret\"]\n",
-    ok = file:write_file(BuildScript, Dockerfile).
+    ok = file:write_file(BuildScript, Dockerfile),
+    os:cmd("docker build -t " ++ ReleaseName ++ " .").

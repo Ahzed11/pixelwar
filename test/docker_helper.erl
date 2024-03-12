@@ -2,7 +2,6 @@
 -export([build_image/3]).
 
 build_image({OldVSN, NewVSN}, ReleaseName, ReleaseDir) ->
-    ReleaseName = ct:get_config(release_name),
     NewReleaseName = ReleaseName ++ "-" ++ NewVSN,
     OldReleaseName = ReleaseName ++ "-" ++ OldVSN,
 

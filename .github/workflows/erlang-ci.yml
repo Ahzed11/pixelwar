@@ -49,21 +49,10 @@ jobs:
         files: |
           ./results/**/*.xml
 
-    # - name: Publish HTML report to Github pages
-    #   if: always()
-    #   uses: peaceiris/actions-gh-pages@v3
-    #   with:
-    #     publish_dir: ./results/last
-    #     destination_dir: ./tests/erlang-ci/${{ github.run_number }} # This is where index.html will be output
-    #     keep_files: true # Set this to true to make sure we don't wipe out the other content in GitHub 
-        
     - name: Publish HTML report to Github pages
-      uses: PavanMudigonda/html-reporter-github-pages@v1.2
+      if: always()
+      uses: peaceiris/actions-gh-pages@v3
       with:
-        test_results: ./results/last
-        keep_reports: 20
-        subfolder: tests  # Level 1 Folder
-        tool_name: common_test # Level 2 Folder
-        workflow_name: ${{ github.workflow }} # Level 3 Folder
-        env: ${{ github.run_number }} # Level 4 Folder
-      
+        publish_dir: ./results/last
+        destination_dir: ./tests/erlang-ci/${{ github.run_number }} # This is where index.html will be output
+        keep_files: true # Set this to true to make sure we don't wipe out the other content in GitHub       

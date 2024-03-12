@@ -25,9 +25,13 @@ init_per_suite(Config) ->
     ct:print("Initializing suite..."),
     ct:log(info, ?LOW_IMPORTANCE, "Initializing suite...", []),
     Docker = os:find_executable("docker"),
-    build_image(),
-    ReleaseName = ct:get_config(release_name),
 
+    OldVSN = ct:get_config(old_version),
+    NewVSN = ct:get_config(new_version),
+    ReleaseName = ct:get_config(release_name),
+    ReleaseDir = ct:get_config(release_dir),
+    docker_helper:build_image({OldVSN, NewVSN}, ReleaseName, ReleaseDir),
+    
     {ok, Peer, Node} = peer:start(#{name => ReleaseName,
         connection => standard_io,
         exec => {Docker, ["run", "-h", "one", "-i", ReleaseName]}}),

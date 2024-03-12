@@ -53,6 +53,7 @@ jobs:
       if: always()
       uses: peaceiris/actions-gh-pages@v3
       with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./results/last
         destination_dir: ./tests/erlang-ci/${{ github.run_number }} # This is where index.html will be output
         keep_files: true # Set this to true to make sure we don't wipe out the other content in GitHub       

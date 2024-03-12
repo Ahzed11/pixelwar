@@ -1,5 +1,6 @@
 -module(docker_helper).
 -export([build_image/3]).
+-compile(export_all).
 
 build_image({OldVSN, NewVSN}, ReleaseName, ReleaseDir) ->
     NewReleaseName = ReleaseName ++ "-" ++ NewVSN,

@@ -15,14 +15,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
     - name: Check if a previous tags exists
       run: |
         LAST_TAG=$(git tag -l --sort=committerdate 'v*.*.*' | tail -n 1)
         echo "LAST_TAG=$LAST_TAG" >> $GITHUB_ENV
-
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
 
     - uses: erlef/setup-beam@v1
       with:

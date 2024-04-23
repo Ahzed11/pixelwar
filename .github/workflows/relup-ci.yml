@@ -16,8 +16,9 @@ jobs:
 
     steps:
     - name: Check if a previous tags exists
-      id: check
-      uses: ahzed11/has-tags-action@v1.1
+      run: |
+        LAST_TAG=git tag -l --sort=committerdate 'v*.*.*' | tail -n 1
+        echo "LAST_TAG=$LAST_TAG" >> $GITHUB_ENV
 
     - uses: actions/checkout@v4
       with:
@@ -30,7 +31,7 @@ jobs:
 
     - name: Run validation checks and build releases
       working-directory: .
-      if: ${{steps.check.outputs.hasTags == 'true'}}
+      if: ${{env.LAST_TAG != ''}}
       run: |
         ./scripts/check_versions ${{vars.RELNAME}} $(/usr/bin/git log -1 --format='%H') > vsn.log
         cat vsn.log

@@ -17,7 +17,7 @@ main([Path]) ->
     [H | _] = lists:filter(Filter, Terms),
     {relx, Relx} = H,
     {release, {Release, _}, _} = lists:nth(1, Relx),
-    io:format("~w", [Release]);
+    io:format("~s", [Release]);
 
 main(_) ->
     usage().

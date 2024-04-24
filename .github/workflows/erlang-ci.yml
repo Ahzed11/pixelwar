@@ -29,7 +29,7 @@ jobs:
       working-directory: .
       run: |
         mkdir results
-        rebar3 do cover -v, ct --dir apps --verbose true --logdir ./results --label erlang-ci --cover true
+        rebar3 ct --dir apps --verbose true --logdir ./results --label erlang-ci --cover true
     - name: Release can be built
       working-directory: .
       run: rebar3 do release, tar

@@ -56,7 +56,7 @@ jobs:
       
     - name: Test upgrade and downgrade of the application
       working-directory: .
-      if: ${{steps.check.outputs.hasTags == 'true' && env.IS_RESTART == 'false'}}
+      if: ${{env.LAST_TAG != '' && env.IS_RESTART == 'false'}}
       run: |
         mkdir relupci
         mkdir relupci/releases/
@@ -71,11 +71,15 @@ jobs:
 
         mkdir results
         rebar3 ct --dir ./test --verbose true --config ./test/config.config --logdir ./results --label relup-ci
-        rm -rf ./results/**/*.tar.gz
+    
+    - name: Remove releases to save space
+      working-directory: .
+      if: ${{ always() && env.LAST_TAG != '' && env.IS_RESTART == 'false'}}
+      run: rm -rf ./results/**/*.tar.gz
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
-      if: ${{steps.check.outputs.hasTags == 'true' && env.IS_RESTART == 'false'}}
+      if: ${{ always() && env.LAST_TAG != '' && env.IS_RESTART == 'false'}}
       with:
         name: relup-ci-results
         path: ./results
@@ -84,7 +88,7 @@ jobs:
 
     - name: Relup CI results
       uses: EnricoMi/publish-unit-test-result-action@v2
-      if: ${{steps.check.outputs.hasTags == 'true' && env.IS_RESTART == 'false'}}
+      if: ${{ always() && env.LAST_TAG != '' && env.IS_RESTART == 'false'}}
       with:
         check_name: Relup CI results
         files: |

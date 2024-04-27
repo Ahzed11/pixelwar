@@ -22,7 +22,7 @@ jobs:
       run: echo "tag=$(git tag -l --sort=committerdate 'v*.*.*' | tail -n 1)" >> "$GITHUB_OUTPUT"
 
   upgrade-downgrade-test:
-    needs: check-if-previous-tag-is-present
+    needs: [check-if-previous-tag-is-present]
     if: ${{ needs.check-if-previous-tag-is-present.outputs.last-tag != '' }}
     runs-on: ubuntu-latest
 

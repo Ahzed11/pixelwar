@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: ./.github/workflows/setup.yml
+    - uses: ./.github/setup
     
     - name: Run validation checks
       working-directory: .
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: ./.github/workflows/setup.yml
+    - uses: ./.github/setup
 
     - name: Check that the release can be built
       working-directory: .
@@ -37,8 +37,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: ./.github/workflows/setup.yml
-    
+    - uses: ./.github/setup
+
     - name: Run unit tests
       working-directory: .
       run: |

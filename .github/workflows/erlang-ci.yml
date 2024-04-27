@@ -13,27 +13,39 @@ permissions:
   pull-requests: write
 
 jobs:
+  validation-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: ./.github/workflows/setup.yml
+    
+    - name: Run validation checks
+      working-directory: .
+      run: rebar3 do xref, dialyzer
+  
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: erlef/setup-beam@v1
-      with:
-        otp-version: '26'
-        rebar3-version: '3.22.1'
-    - uses: actions/checkout@v4
-    - name: Run validation checks
+    - uses: ./.github/workflows/setup.yml
+
+    - name: Check that the release can be built
       working-directory: .
-      run: rebar3 do xref, dialyzer
+      run: rebar3 do release, tar
+
+  unit-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: ./.github/workflows/setup.yml
+    
     - name: Run unit tests
       working-directory: .
       run: |
         mkdir results
         rebar3 do ct --dir apps --verbose true --logdir ./results --label erlang-ci --cover true, cover -v
-    - name: Release can be built
-      working-directory: .
-      run: rebar3 do release, tar
-    - name: Upload test results
+    
+    - name: Upload test results as artifact
       uses: actions/upload-artifact@v4
       if: always()
       with:
@@ -41,7 +53,8 @@ jobs:
         path: ./results
         compression-level: 9
         retention-days: 30
-    - name: Erlang CI results
+    
+    - name: Publish Erlang CI results
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
       with:

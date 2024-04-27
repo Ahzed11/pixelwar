@@ -1,0 +1,17 @@
+name: Setup
+
+on:
+  workflow_call:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup the BEAM
+      uses: erlef/setup-beam@v1
+      with:
+        otp-version: '26'
+        rebar3-version: '3.22.1'
+      
+    - name: Clone the repository
+      uses: actions/checkout@v4

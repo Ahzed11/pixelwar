@@ -16,6 +16,7 @@ jobs:
     outputs:
       last-tag: ${{ steps.fetch-tag.outputs.tag }}
     steps:
+    - uses: actions/checkout@v4
     - name: Fetch previous tag
       id: fetch-tag
       run: |

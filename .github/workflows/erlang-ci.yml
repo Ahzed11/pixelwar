@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v4
     - uses: ./.github/workflow-templates/setup.yml
     
     - name: Run validation checks
@@ -27,6 +28,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v4
     - uses: ./.github/workflow-templates/setup.yml
 
     - name: Check that the release can be built
@@ -37,6 +39,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v4
     - uses: ./.github/workflow-templates/setup.yml
 
     - name: Run unit tests

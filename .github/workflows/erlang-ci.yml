@@ -48,19 +48,7 @@ jobs:
         mkdir results
         rebar3 do ct --dir apps --verbose true --logdir ./results --label erlang-ci --cover true, cover -v
     
-    - name: Upload test results as artifact
-      uses: actions/upload-artifact@v4
+    - uses: ./.github/publish-ct-results
       if: always()
       with:
-        name: erlang-ci-results
-        path: ./results
-        compression-level: 9
-        retention-days: 30
-    
-    - name: Publish Erlang CI results
-      uses: EnricoMi/publish-unit-test-result-action@v2
-      if: always()
-      with:
-        check_name: Erlang CI results
-        files: |
-          ./results/**/*.xml
+        test-name: erlang-ci

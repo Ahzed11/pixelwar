@@ -78,19 +78,7 @@ jobs:
       if: ${{ always() && env.IS_RESTART == 'false'}}
       run: rm -rf ./results/**/*.tar.gz
 
-    - name: Upload test results as artifact
-      uses: actions/upload-artifact@v4
+    - uses: ./.github/publish-ct-results
       if: ${{ always() && env.IS_RESTART == 'false'}}
       with:
-        name: relup-ci-results
-        path: ./results
-        compression-level: 9 
-        retention-days: 30
-
-    - name: Publish Relup CI results
-      uses: EnricoMi/publish-unit-test-result-action@v2
-      if: ${{ always() && env.LAST_TAG != '' && env.IS_RESTART == 'false'}}
-      with:
-        check_name: Relup CI results
-        files: |
-          ./results/**/*.xml
+        test-name: relup-ci

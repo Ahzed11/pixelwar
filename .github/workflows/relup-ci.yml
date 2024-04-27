@@ -21,6 +21,7 @@ jobs:
       id: fetch-tag
       run: |
         LAST_TAG=$(git tag -l --sort=committerdate 'v*.*.*' | tail -n 1)
+        echo $LAST_TAG
         echo "tag=$LAST_TAG" >> $GITHUB_OUTPUT
 
   upgrade-downgrade-test:
